@@ -4,32 +4,52 @@ class Tabs extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: this.props.children().props.children[0].props.children,
+      currentTabContext: 'Tab is not selected yet',
+      currentTabIndex: -1,
+      currentTabTitle: '...',
     };
-  }
-
-  handleTabSelected(title, children) {
-    this.setState({ activeTab: children });
   }
 
   render() {
     const { children } = this.props;
-    const content = children({
-      onClick: this.handleTabSelected.bind(this),
-    });
+    const { currentTabContext, currentTabIndex, currentTabTitle } = this.state;
+
     return (
-      <div className="tabs">
-        <div className="tab-list">{content}</div>
-        <p className="tabs-content">{ this.state.activeTab }</p>
+      <div>
+        <h2 className="tabs-title">
+          Current Tab is {(currentTabTitle)}
+        </h2>
+        <div className="Tabs">
+          {children.map((child, index) => (
+            <TabHeader
+              key={index}
+              title={child.props.title}
+              isActiveTab={index === currentTabIndex}
+              onClick={() => {
+                this.setState({
+                  currentTabContext: child.props.children,
+                  currentTabIndex: index,
+                  currentTabTitle: child.props.title,
+                });
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="tabs-content">{currentTabContext}</div>
+
       </div>
     );
   }
 }
 
-Tabs.Tab = ({ title, children, onClick }) => (
-  <button type="button" className="tab-button" onClick={() => onClick(title, children)}>
+const Tab = () => {};
+
+const TabHeader = ({ title, onClick }) => (
+  <button type="button" className="tab-button" onClick={onClick}>
     {title}
   </button>
 );
 
-export default Tabs;
+
+export { Tabs, Tab };
